@@ -1,3 +1,4 @@
+
 %{
 /*
  *	PROGRAM:	Dynamic SQL runtime support
@@ -429,6 +430,7 @@ using namespace Firebird;
 %token <metaNamePtr> OCTET_LENGTH
 %token <metaNamePtr> TRAILING
 %token <metaNamePtr> TRIM
+%token <metaNamePtr> LTRIM
 %token <metaNamePtr> RETURNING
 %token <metaNamePtr> IGNORE
 %token <metaNamePtr> LIMBO
@@ -4279,6 +4281,7 @@ keyword_or_column
 	| OCTET_LENGTH
 	| TRAILING
 	| TRIM
+        | LTRIM
 	| CONNECT				// added in FB 2.1
 	| DISCONNECT
 	| GLOBAL
@@ -8464,7 +8467,8 @@ of_first_last_day_part
 %type <valueExprNode> string_value_function
 string_value_function
 	: substring_function
-	| trim_function
+        | trim_function
+        | ltrim_function
 	| UPPER '(' value ')'
 		{ $$ = newNode<StrCaseNode>(blr_upcase, $3); }
 	| LOWER '(' value ')'
@@ -8502,8 +8506,20 @@ trim_function
 	| TRIM '(' trim_specification FROM value ')'
 		{ $$ = newNode<TrimNode>($3, $5); }
 	| TRIM '(' value ')'
-		{ $$ = newNode<TrimNode>(blr_trim_both, $3); }
-	;
+                { $$ = newNode<TrimNode>(blr_trim_both, $3); }
+        ;
+
+%type <valueExprNode> ltrim_function
+ltrim_function
+        : LTRIM '(' ltrim_specification value FROM value ')'
+                { $$ = newNode<LTrimNode>($3, $6, $4); }
+        | LTRIM '(' value FROM value ')'
+                { $$ = newNode<LTrimNode>(blr_ltrim_both, $5, $3); }
+        | LTRIM '(' ltrim_specification FROM value ')'
+                { $$ = newNode<LTrimNode>($3, $5); }
+        | LTRIM '(' value ')'
+                { $$ = newNode<LTrimNode>(blr_ltrim_both, $3); }
+        ;
 
 %type <blrOp> trim_specification
 trim_specification
@@ -8511,6 +8527,13 @@ trim_specification
 	| TRAILING	{ $$ = blr_trim_trailing; }
 	| LEADING	{ $$ = blr_trim_leading; }
 	;
+
+%type <blrOp> ltrim_specification
+ltrim_specification
+        : BOTH		{ $$ = blr_ltrim_both; }
+        | TRAILING	{ $$ = blr_ltrim_trailing; }
+        | LEADING	{ $$ = blr_ltrim_leading; }
+        ;
 
 %type <valueExprNode> udf
 udf

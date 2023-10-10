@@ -464,4 +464,14 @@
 
 #define blr_skip_locked				(unsigned char) 223
 
+#define blr_ltrim			(unsigned char)224
+/* first sub parameter for blr_trim */
+#define blr_ltrim_both		(unsigned char)0
+#define blr_ltrim_leading	(unsigned char)1
+#define blr_ltrim_trailing	(unsigned char)2
+
+/* second sub parameter for blr_trim */
+#define blr_ltrim_spaces		(unsigned char)0
+#define blr_ltrim_characters	(unsigned char)1
+
 #endif // FIREBIRD_IMPL_BLR_H
