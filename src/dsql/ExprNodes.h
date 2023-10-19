@@ -2115,44 +2115,6 @@ public:
 };
 
 
-class LTrimNode final : public TypedNode<ValueExprNode, ExprNode::TYPE_LTRIM>
-{
-public:
-    explicit LTrimNode(MemoryPool& pool, UCHAR aWhere,
-                      ValueExprNode* aValue = NULL, ValueExprNode* aTrimChars = NULL);
-
-    static DmlNode* parse(thread_db* tdbb, MemoryPool& pool, CompilerScratch* csb, const UCHAR blrOp);
-
-    virtual void getChildren(NodeRefsHolder& holder, bool dsql) const
-    {
-        ValueExprNode::getChildren(holder, dsql);
-
-        holder.add(value);
-        holder.add(trimChars);
-    }
-
-    virtual Firebird::string internalPrint(NodePrinter& printer) const;
-    virtual ValueExprNode* dsqlPass(DsqlCompilerScratch* dsqlScratch);
-    virtual void setParameterName(dsql_par* parameter) const;
-    virtual bool setParameterType(DsqlCompilerScratch* dsqlScratch,
-                                  std::function<void (dsc*)> makeDesc, bool forceVarChar);
-    virtual void genBlr(DsqlCompilerScratch* dsqlScratch);
-    virtual void make(DsqlCompilerScratch* dsqlScratch, dsc* desc);
-
-    virtual void getDesc(thread_db* tdbb, CompilerScratch* csb, dsc* desc);
-    virtual ValueExprNode* copy(thread_db* tdbb, NodeCopier& copier) const;
-    virtual bool dsqlMatch(DsqlCompilerScratch* dsqlScratch, const ExprNode* other, bool ignoreMapCast) const;
-    virtual bool sameAs(const ExprNode* other, bool ignoreStreams) const;
-    virtual ValueExprNode* pass2(thread_db* tdbb, CompilerScratch* csb);
-    virtual dsc* execute(thread_db* tdbb, Request* request) const;
-
-public:
-    UCHAR where;
-    NestConst<ValueExprNode> value;
-    NestConst<ValueExprNode> trimChars;	// may be NULL
-};
-
-
 class UdfCallNode final : public TypedNode<ValueExprNode, ExprNode::TYPE_UDF_CALL>
 {
 private:

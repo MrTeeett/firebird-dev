@@ -431,6 +431,7 @@ using namespace Firebird;
 %token <metaNamePtr> TRAILING
 %token <metaNamePtr> TRIM
 %token <metaNamePtr> LTRIM
+%token <metaNamePtr> RTRIM
 %token <metaNamePtr> RETURNING
 %token <metaNamePtr> IGNORE
 %token <metaNamePtr> LIMBO
@@ -4282,6 +4283,7 @@ keyword_or_column
 	| TRAILING
 	| TRIM
         | LTRIM
+        | RTRIM
 	| CONNECT				// added in FB 2.1
 	| DISCONNECT
 	| GLOBAL
@@ -8469,6 +8471,7 @@ string_value_function
 	: substring_function
         | trim_function
         | ltrim_function
+        | rtrim_function
 	| UPPER '(' value ')'
 		{ $$ = newNode<StrCaseNode>(blr_upcase, $3); }
 	| LOWER '(' value ')'
@@ -8511,15 +8514,27 @@ trim_function
 
 %type <valueExprNode> ltrim_function
 ltrim_function
-        : LTRIM '(' ltrim_specification value FROM value ')'
-                { $$ = newNode<LTrimNode>($3, $6, $4); }
+        : LTRIM '(' trim_specification value FROM value ')'
+                { $$ = newNode<TrimNode>($3, $6, $4); }
         | LTRIM '(' value FROM value ')'
-                { $$ = newNode<LTrimNode>(blr_ltrim_both, $5, $3); }
-        | LTRIM '(' ltrim_specification FROM value ')'
-                { $$ = newNode<LTrimNode>($3, $5); }
+                { $$ = newNode<TrimNode>(blr_trim_leading, $5, $3); }
+        | LTRIM '(' trim_specification FROM value ')'
+                { $$ = newNode<TrimNode>($3, $5); }
         | LTRIM '(' value ')'
-                { $$ = newNode<LTrimNode>(blr_ltrim_both, $3); }
+                { $$ = newNode<TrimNode>(blr_trim_leading, $3); }
         ;
+
+%type <valueExprNode> rtrim_function
+rtrim_function
+        : RTRIM '(' trim_specification value FROM value ')'
+                { $$ = newNode<TrimNode>($3, $6, $4); }
+        | RTRIM '(' value FROM value ')'
+                { $$ = newNode<TrimNode>(blr_trim_trailing, $5, $3); }
+        | RTRIM '(' trim_specification FROM value ')'
+                { $$ = newNode<TrimNode>($3, $5); }
+        | RTRIM '(' value ')'
+                { $$ = newNode<TrimNode>(blr_trim_trailing, $3); }
+;
 
 %type <blrOp> trim_specification
 trim_specification
@@ -8527,13 +8542,6 @@ trim_specification
 	| TRAILING	{ $$ = blr_trim_trailing; }
 	| LEADING	{ $$ = blr_trim_leading; }
 	;
-
-%type <blrOp> ltrim_specification
-ltrim_specification
-        : BOTH		{ $$ = blr_ltrim_both; }
-        | TRAILING	{ $$ = blr_ltrim_trailing; }
-        | LEADING	{ $$ = blr_ltrim_leading; }
-        ;
 
 %type <valueExprNode> udf
 udf

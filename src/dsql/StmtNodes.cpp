@@ -10453,17 +10453,6 @@ static void dsqlSetParameterName(DsqlCompilerScratch* dsqlScratch, ExprNode* exp
 			break;
 		}
 
-        case ExprNode::TYPE_LTRIM:
-        {
-            NodeRefsHolder holder(dsqlScratch->getPool());
-            exprNode->getChildren(holder, true);
-
-            for (auto ref : holder.refs)
-                dsqlSetParameterName(dsqlScratch, *ref, fld_node, relation);
-
-            break;
-        }
-
 		case ExprNode::TYPE_PARAMETER:
 		{
 			ParameterNode* paramNode = nodeAs<ParameterNode>(exprNode);
