@@ -505,6 +505,7 @@ static const TOK tokens[] =
 	{TOK_TRAPS, "TRAPS", true},
 	{TOK_TRIGGER, "TRIGGER", false},
 	{TOK_TRIM, "TRIM", false},
+    {TOK_BTRIM, "BTRIM", false},
     {TOK_RTRIM, "RTRIM", false},
     {TOK_LTRIM, "LTRIM", false},
 	{TOK_TRUE, "TRUE", false},

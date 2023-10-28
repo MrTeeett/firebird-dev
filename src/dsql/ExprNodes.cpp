@@ -12448,13 +12448,13 @@ void TrimNode::setParameterName(dsql_par* parameter) const
 {
     switch(where)
     {
-    case 0:
+    case blr_trim_both:
         parameter->par_name = parameter->par_alias = "TRIM";
         break;
-    case 1:
+    case blr_trim_leading:
         parameter->par_name = parameter->par_alias = "LTRIM";
         break;
-    case 2:
+    case blr_trim_trailing:
         parameter->par_name = parameter->par_alias = "RTRIM";
         break;
     }

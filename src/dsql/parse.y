@@ -430,6 +430,7 @@ using namespace Firebird;
 %token <metaNamePtr> OCTET_LENGTH
 %token <metaNamePtr> TRAILING
 %token <metaNamePtr> TRIM
+%token <metaNamePtr> BTRIM
 %token <metaNamePtr> LTRIM
 %token <metaNamePtr> RTRIM
 %token <metaNamePtr> RETURNING
@@ -4282,6 +4283,7 @@ keyword_or_column
 	| OCTET_LENGTH
 	| TRAILING
 	| TRIM
+        | BTRIM
         | LTRIM
         | RTRIM
 	| CONNECT				// added in FB 2.1
@@ -8470,6 +8472,7 @@ of_first_last_day_part
 string_value_function
 	: substring_function
         | trim_function
+        | btrim_function
         | ltrim_function
         | rtrim_function
 	| UPPER '(' value ')'
@@ -8512,29 +8515,29 @@ trim_function
                 { $$ = newNode<TrimNode>(blr_trim_both, $3); }
         ;
 
+%type <valueExprNode> btrim_function
+btrim_function
+        : BTRIM '(' value FROM value ')'
+                { $$ = newNode<TrimNode>(blr_trim_both, $5, $3); }
+        | BTRIM '(' value ')'
+                { $$ = newNode<TrimNode>(blr_trim_both, $3); }
+        ;
+
 %type <valueExprNode> ltrim_function
 ltrim_function
-        : LTRIM '(' trim_specification value FROM value ')'
-                { $$ = newNode<TrimNode>($3, $6, $4); }
-        | LTRIM '(' value FROM value ')'
+        : LTRIM '(' value FROM value ')'
                 { $$ = newNode<TrimNode>(blr_trim_leading, $5, $3); }
-        | LTRIM '(' trim_specification FROM value ')'
-                { $$ = newNode<TrimNode>($3, $5); }
         | LTRIM '(' value ')'
                 { $$ = newNode<TrimNode>(blr_trim_leading, $3); }
         ;
 
 %type <valueExprNode> rtrim_function
 rtrim_function
-        : RTRIM '(' trim_specification value FROM value ')'
-                { $$ = newNode<TrimNode>($3, $6, $4); }
-        | RTRIM '(' value FROM value ')'
+        : RTRIM '(' value FROM value ')'
                 { $$ = newNode<TrimNode>(blr_trim_trailing, $5, $3); }
-        | RTRIM '(' trim_specification FROM value ')'
-                { $$ = newNode<TrimNode>($3, $5); }
         | RTRIM '(' value ')'
                 { $$ = newNode<TrimNode>(blr_trim_trailing, $3); }
-;
+        ;
 
 %type <blrOp> trim_specification
 trim_specification
