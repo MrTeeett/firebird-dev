@@ -9,6 +9,9 @@ Author:
 Format:
 	<trim function> ::=
 		TRIM <left paren> [ [ <trim specification> ] [ <trim character> ] FROM ] <value expression> <right paren>
+		BTRIM <left paren> [ [ <trim character> ] FROM ] <value expression> <right paren>
+		LTRIM <left paren> [ [ <trim character> ] FROM ] <value expression> <right paren>
+		RTRIM <left paren> [ [ <trim character> ] FROM ] <value expression> <right paren>
 
 	<trim specification> ::=
 		  LEADING
@@ -34,5 +37,11 @@ A)
 B)
 	select
 		trim(rdb$relation_name) || ' is a system table'
+		from rdb$relations
+		where rdb$system_flag = 1;
+
+C)
+	select
+		rtrim(rdb$relation_name) || ' is a system table'
 		from rdb$relations
 		where rdb$system_flag = 1;
